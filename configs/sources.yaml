@@ -1,0 +1,138 @@
+# Sources Configuration — VVTV Discovery
+# Atualizado: 2026-01-10
+
+# ============================================
+# YouTube
+# ============================================
+youtube:
+  enabled: true
+  
+  # API (quando disponível)
+  api:
+    enabled: false
+    key: ""  # set via env: YOUTUBE_API_KEY
+    
+  # yt-dlp (subprocess)
+  ytdlp:
+    enabled: true
+    binary_path: "/usr/local/bin/yt-dlp"
+    
+    args:
+      - "--quiet"
+      - "--no-warnings"
+      - "--format"
+      - "bestvideo[height>=720]+bestaudio/best[height>=720]"
+      - "--dump-json"
+    
+    filters:
+      min_duration_secs: 180     # 3 minutos
+      max_duration_secs: 2700    # 45 minutos
+      min_resolution: "720p"
+  
+  # Rate limiting
+  rate_limit:
+    requests_per_minute: 30
+    backoff_on_429: true
+
+# ============================================
+# Vimeo
+# ============================================
+vimeo:
+  enabled: true
+  
+  # Staff picks, categories, channels
+  channels:
+    - "staffpicks"
+    - "shortoftheweek"
+    - "experimental"
+  
+  filters:
+    min_duration_secs: 180
+    max_duration_secs: 2700
+    require_hd: true
+  
+  rate_limit:
+    requests_per_minute: 20
+
+# ============================================
+# RSS/Atom Feeds
+# ============================================
+rss:
+  enabled: true
+  
+  feeds:
+    - url: "https://example.com/cinema/feed.xml"
+      bucket: "artistic"
+      refresh_hours: 12
+      
+    - url: "https://example.com/shorts/feed.xml"
+      bucket: "sensual"
+      refresh_hours: 12
+  
+  # Filtros globais
+  filters:
+    require_enclosure: true   # item deve ter <enclosure>
+    min_duration_secs: 180
+
+# ============================================
+# Whitelisted Sites (custom scrapers)
+# ============================================
+whitelisted_sites:
+  enabled: false  # requires custom implementation
+  
+  sites:
+    - domain: "artfilms.example"
+      selector: ".video-item"
+      metadata_extractor: "json_ld"
+      rate_limit_rpm: 10
+      
+    - domain: "cineclub.example"
+      selector: "article.film"
+      metadata_extractor: "opengraph"
+      rate_limit_rpm: 10
+
+# ============================================
+# Music Sources
+# ============================================
+music:
+  enabled: true
+  
+  sources:
+    - type: "soundcloud"
+      playlists:
+        - "ambient-electronica"
+        - "downtempo-beats"
+      
+    - type: "bandcamp"
+      tags:
+        - "ambient"
+        - "chillout"
+        - "cinematic"
+  
+  filters:
+    min_duration_secs: 120    # 2 min
+    max_duration_secs: 600    # 10 min
+    require_downloadable: true
+
+# ============================================
+# Global Settings
+# ============================================
+global:
+  # User agent (simula humano)
+  user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  
+  # Retry policy
+  retry:
+    max_attempts: 3
+    backoff_multiplier: 2.0
+    initial_delay_ms: 1000
+  
+  # Deduplication
+  dedup:
+    strategy: "url_hash"      # url_hash | content_fingerprint | both
+    lookback_days: 30
+  
+  # Concurrent fetching
+  concurrency:
+    max_workers: 8
+    semaphore_permits: 16

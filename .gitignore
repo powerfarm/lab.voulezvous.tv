@@ -1,0 +1,62 @@
+# .gitignore for VVTV
+
+# Rust
+target/
+Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# Terraform
+**/.terraform/
+**/.terraform.lock.hcl
+**/terraform.tfstate
+**/terraform.tfstate.backup
+**/*.tfvars.json
+**/render/
+
+# Secrets & Config
+**/.env
+**/.env.*
+!**/.env.example
+**/secrets/
+*.pem
+*.key
+*.crt
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Logs
+*.log
+logs/
+/opt/vvtv/logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+dist/
+build/
+*.wasm
+*.worker.js
+
+# Data directories
+/var/lib/vvtv/
+packs/
+cache/
+work/
+
+# MinIO
+minio/
+
+# Temp
+tmp/
+temp/
+*.tmp

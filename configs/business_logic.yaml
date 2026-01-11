@@ -1,0 +1,201 @@
+# Business Logic — VVTV (Cartão do Dono)
+# Atualizado: 2026-01-10
+# Versão: 1.0.0
+
+# ============================================
+# SELEÇÃO & SCORING
+# ============================================
+selection:
+  method: softmax
+  temperature: 0.6
+  seed_strategy: slot_hash  # determinístico por slot
+  
+  # Fatores de scoring (peso relativo)
+  factors:
+    duration_match: 0.20      # proximidade da duração-alvo
+    diversity: 0.18           # novidade temática
+    quality_potential: 0.17   # HD disponível, codec moderno
+    aesthetic_score: 0.15     # valor visual (quando disponível)
+    freshness: 0.15           # recência da descoberta
+    music_pairing: 0.15       # potencial de trilha (vídeos)
+
+  # Knobs ajustáveis (Autopilot pode mexer aqui)
+  knobs:
+    plan_selection_bias: 0.0  # [-0.20, 0.20] — boost/penalidade global
+    
+# ============================================
+# DIVERSIDADE & BUCKETS
+# ============================================
+diversity:
+  target: 0.05               # KLD threshold entre slots
+  max_same_bucket_streak: 3  # máximo de itens consecutivos do mesmo bucket
+  
+  buckets:
+    - id: sensual
+      keywords: ["sensual", "romantic", "intimate", "slow"]
+      target_pct: 0.30
+      
+    - id: energetic
+      keywords: ["energetic", "upbeat", "dynamic", "fast"]
+      target_pct: 0.25
+      
+    - id: artistic
+      keywords: ["artistic", "cinematic", "aesthetic", "creative"]
+      target_pct: 0.25
+      
+    - id: music
+      keywords: ["music", "song", "soundtrack", "audio"]
+      target_pct: 0.10
+      min_pct: 0.08           # garantir pelo menos 8% de música
+      
+    - id: experimental
+      keywords: ["experimental", "avant-garde", "unusual"]
+      target_pct: 0.10
+
+# ============================================
+# DURAÇÃO & RITMO
+# ============================================
+duration:
+  target_avg_minutes: 12.0
+  min_minutes: 3.0
+  max_minutes: 45.0
+  
+  # Variação desejada (evitar monotonia)
+  jitter_pct: 0.15          # ±15% de variação entre slots
+
+# ============================================
+# FILA & MUSIC RATIO
+# ============================================
+queue:
+  music_ratio: 0.10          # 10% da grade deve ser música
+  curation_bump_threshold: 0.85  # score acima disso sobe na fila
+  max_reorder_distance: 4    # limite de reordenação do Curador
+  fifo_base: true            # FIFO como base (exceto bumps)
+
+# ============================================
+# CURADOR VIGILANTE (LLM via MCP)
+# ============================================
+curator:
+  enabled: true
+  mode: observer             # observer | apply_limited | pleno
+  
+  min_confidence_apply: 0.62 # só aplica acima desse threshold
+  max_applies_per_hour: 6    # TokenBucket
+  
+  signals:
+    - palette_similarity     # cores muito parecidas
+    - tag_duplication        # tags idênticas
+    - duration_streak        # durações muito uniformes
+    - bucket_imbalance       # desbalanço de buckets
+    - temporal_novelty       # KLD temporal
+  
+  llm_provider: "pool://local"  # via mcp-hub
+  timeout_secs: 15
+  fallback_to_heuristic: true
+
+# ============================================
+# AUTOPILOT D+1
+# ============================================
+autopilot:
+  enabled: true
+  schedule: "03:00 UTC"
+  
+  # KPIs observados
+  kpis:
+    retention_5min:
+      min_threshold: 0.38
+      target: 0.50
+    vmaf_avg:
+      min_threshold: 90.0
+      target: 93.0
+    lufs_avg:
+      target: -14.0
+      tolerance: 0.5
+  
+  # Bounds para ajustes (anti-windup)
+  bounds:
+    temperature_delta: 0.05   # máx ±0.05 por dia
+    bias_delta: 0.02          # máx ±0.02 por dia
+    diversity_target_delta: 0.01
+  
+  # Canary rollout
+  canary:
+    initial_pct: 0.20         # 20% da grade
+    duration_minutes: 60
+    auto_rollback_on_regression: true
+
+# ============================================
+# DISCOVERY (palavras-chave)
+# ============================================
+discovery:
+  keywords:
+    videos:
+      - "adult cinema"
+      - "erotic short film"
+      - "sensual dance"
+      - "artistic nude"
+      - "intimate storytelling"
+    music:
+      - "ambient electronic"
+      - "downtempo beats"
+      - "lofi chill"
+      - "cinematic score"
+  
+  sources:
+    enabled: ["youtube", "vimeo", "rss"]
+    refresh_interval_hours: 12
+
+# ============================================
+# QC (inegociável)
+# ============================================
+qc:
+  vmaf_min: 90.0
+  ssim_min: 0.92
+  lufs_target: -14.0
+  lufs_tolerance: 0.5
+  min_resolution: "720p"
+  
+  compliance:
+    check_overlays: true
+    check_timecodes: true
+    denylist_enabled: true
+
+# ============================================
+# SCHEDULING & PREFETCH
+# ============================================
+scheduling:
+  prefetch_deadline_hours: 6  # T-6h → pré-download
+  buffer_target_hours: 2.0
+  emergency_loop_threshold: 1.0  # injeta loop se buffer < 1h
+  
+  windows:
+    prime_time:
+      start: "20:00"
+      end: "02:00"
+      boost_factor: 1.2       # favorece itens de alta qualidade
+
+# ============================================
+# ROLLOUT (faseamento)
+# ============================================
+rollout:
+  phase: observer             # observer → apply_limited → pleno
+  date_started: "2026-01-10"
+  
+  phases:
+    observer:
+      description: "Curador só registra, não aplica"
+      min_days: 7
+    apply_limited:
+      description: "Curador aplica apenas em prime_time"
+      min_days: 14
+    pleno:
+      description: "Curador aplica em toda a grade"
+
+# ============================================
+# MONTHLY REVIEW (humano decide)
+# ============================================
+monthly_review:
+  enabled: true
+  auto_generate_report: true
+  require_human_approval: true
+  pr_required_approvals: 1

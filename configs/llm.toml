@@ -1,0 +1,138 @@
+# LLM Configuration — VVTV MCP Hub
+# Atualizado: 2026-01-10
+
+# ============================================
+# Pool de LLMs Locais (LAB)
+# ============================================
+pool:
+  provider: "local"
+  endpoint: "http://localhost:11434"  # Ollama
+  
+  models:
+    - name: "phi3:mini"
+      alias: "fast"
+      max_tokens: 2048
+      temperature: 0.3
+      
+    - name: "llama3.1:8b"
+      alias: "balanced"
+      max_tokens: 4096
+      temperature: 0.4
+      
+    - name: "gemma2:9b"
+      alias: "quality"
+      max_tokens: 4096
+      temperature: 0.35
+  
+  # Estratégia de seleção
+  strategy: "fastest"         # fastest | vote | map_reduce
+  
+  # Budgets
+  budgets:
+    max_calls_per_hour: 120
+    max_tokens_per_day: 500_000
+  
+  # Circuit breaker
+  circuit_breaker:
+    failure_threshold: 5
+    timeout_secs: 30
+    half_open_after_secs: 60
+
+# ============================================
+# MCP Server Config
+# ============================================
+mcp:
+  server:
+    listen: "127.0.0.1:8765"
+    transport: "stdio"        # stdio | http
+    
+  tools:
+    enabled:
+      - "curator_analyze"     # análise de diversidade
+      - "query_expand"        # expansão de termos de busca
+      - "metadata_enrich"     # enriquecimento de metadados
+      - "rerank_suggest"      # sugestão de reordenação
+  
+  audit:
+    enabled: true
+    sink: "ubl-ledger"        # logs vão para o ledger
+    log_prompts: false        # não loga prompts completos (privacidade)
+    log_responses: true       # loga respostas (confiança + ação)
+
+# ============================================
+# Task-specific Configs
+# ============================================
+tasks:
+  curator_vigilante:
+    model: "balanced"
+    max_tokens: 1024
+    timeout_secs: 15
+    system_prompt: |
+      You are a curator for a 24/7 streaming TV.
+      Analyze the upcoming playlist for:
+      - Palette similarity (colors/aesthetic)
+      - Tag duplication
+      - Duration streaks
+      - Bucket imbalance
+      
+      Suggest reordering ONLY if confidence >= 0.62.
+      Output JSON: {confidence, signals[], suggestions[]}
+  
+  query_expander:
+    model: "fast"
+    max_tokens: 512
+    timeout_secs: 10
+    system_prompt: |
+      Expand search keywords for adult cinema discovery.
+      Keep it tasteful and artistic.
+      Output: ["term1", "term2", ...]
+  
+  metadata_enricher:
+    model: "balanced"
+    max_tokens: 256
+    timeout_secs: 8
+    system_prompt: |
+      Enrich video metadata with tags and bucket assignment.
+      Output JSON: {tags[], bucket, aesthetic_score}
+
+# ============================================
+# Fallback & Degradation
+# ============================================
+fallback:
+  on_timeout:
+    action: "use_heuristic"   # use_heuristic | skip | retry_once
+  
+  on_error:
+    action: "skip"
+    log_level: "warn"
+  
+  on_budget_exceeded:
+    action: "queue"           # queue | drop
+    max_queue_size: 100
+
+# ============================================
+# Cache
+# ============================================
+cache:
+  enabled: true
+  backend: "disk"             # disk | redis | memory
+  ttl_secs: 86400             # 24h
+  path: "/var/lib/vvtv/cache/llm"
+  
+  # Cache keys baseadas em prompt hash
+  hash_algorithm: "blake3"
+
+# ============================================
+# Monitoring
+# ============================================
+monitoring:
+  prometheus:
+    enabled: true
+    endpoint: "/metrics"
+  
+  metrics:
+    - "mcp_calls_total{provider,model,task}"
+    - "mcp_call_duration_seconds{p50,p95,p99}"
+    - "mcp_tokens_used_total{model}"
+    - "mcp_timeouts_total{task}"
+    - "mcp_circuit_breaker_state{provider}"

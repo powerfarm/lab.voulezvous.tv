@@ -1,0 +1,540 @@
+VVTV — como funciona (do macro ao micro)
+
+1) o que é a VVTV (em uma frase)
+
+A VVTV é uma TV 24/7 de filmes adultos, programada por uma inteligência editorial: ela descobre vídeos e músicas na internet, planeja o que pode entrar no ar, baixa e edita só quando está perto da hora de exibir, garante qualidade técnica, publica em um player HLS estável e aprende todo dia com o que aconteceu ontem.
+
+pense numa emissora que nunca dorme: tudo automatizado, auditável e com um “gosto” curatorial que vai ficando melhor ao longo do tempo.
+
+⸻
+
+2) a experiência do público
+	•	A pessoa abre o link do canal VVTV e encontra uma programação contínua (24/7).
+	•	A transmissão é em HLS (o padrão de streaming compatível com praticamente qualquer dispositivo).
+	•	A qualidade é estável e previsível (sem variações bruscas de volume, resolução ou cortes estranhos).
+	•	O canal “respira”: há variação de ritmos, temas e durações para evitar repetição cansativa.
+
+⸻
+
+3) o ciclo de programação (três relógios)
+
+A VVTV trabalha com três tempos:
+	1.	T=Hoje (ao vivo) – a transmissão roda a partir de uma fila com vídeos prontos e conferidos.
+	2.	T–4 horas (janela de preparação) – o sistema revisa os planos (descrições de vídeos/músicas que parecem promissores) e decide o que baixar e editar agora para entrar no ar na próxima janela.
+	3.	D+1 (aprendizado) – depois do dia terminar, a VVTV gera relatórios, avalia a grade, mede qualidade e refina a lógica editorial para o dia seguinte.
+
+⸻
+
+4) por que a VVTV “planeja primeiro” e baixa depois
+
+Armazenamento é caro e baixar tudo de uma vez é desperdício. A VVTV então mantém uma biblioteca de planos: cada plano descreve um vídeo/música (fonte, duração, tags, valor estético provável, se tem HD, etc.).
+Na véspera da exibição (ou até 4h antes), o sistema revisa a prateleira de planos e decide qual conteúdo vale baixar para compor a próxima janela do canal.
+	•	PLAN: “essa peça parece boa; anota tudo”
+	•	DOWNLOAD (horas ou dias depois): “chegou a hora, vamos buscar essa peça mesmo”
+
+Essa defasagem entre planejar e baixar economiza disco e força uma curadoria melhor.
+
+⸻
+
+5) como a VVTV encontra conteúdo
+
+A VVTV tem um módulo de descoberta que pesquisa vídeos e músicas na internet usando palavras-chave e sinais editoriais (pense: duração ideal, diversidade de temas, estética, ritmo, etc.).
+O sistema não usa API oficial dos sites: em vez disso, abre o navegador real e simula um usuário humano (cliques, scroll, tempo de permanência), porque:
+	•	muitas plataformas só liberam a faixa de melhor qualidade (HD) quando você de fato dá “play”;
+	•	simular uma navegação humana evita bloqueios e revela a versão que um espectador real veria.
+
+Resultado: a VVTV cataloga com fidelidade o que existe lá fora — e só baixa o que for aprovado quando for útil.
+
+⸻
+
+6) a biblioteca de planos
+
+Cada item encontrado vira um plano com:
+	•	link de origem, duração aproximada, possíveis resoluções
+	•	classificação temática e tags
+	•	“nota editorial” (probabilidade de encaixar bem na grade)
+	•	metadados para parear com trilhas musicais (quando for o caso)
+
+A lógica de negócio (as “regras do dono”) define o que a VVTV valoriza: variedade de temas, equilíbrio entre tipos, ritmos, duração-alvo, presença de música, etc.
+
+⸻
+
+7) a hora H: dar play antes de baixar (PBD)
+
+Quando um plano é escolhido pra entrar no ar, a VVTV abre o navegador, dá play de verdade e confirma qual faixa HD está sendo entregue naquele momento.
+Só então baixa (ou captura) a versão que bate com o que foi tocado.
+Esse passo garante que o material preparado é idêntico ao que um humano teria visto — nada de enganos por causa de prévias ou transcodificações escondidas.
+
+⸻
+
+8) edição e controle de qualidade
+
+Após o download, a VVTV padroniza o material:
+	•	áudio nivelado para –14 LUFS ±0,5 dB
+	•	vídeo revisado (alvo VMAF ≥ 90 e SSIM ≥ 0,92)
+	•	remux/encode rápidos quando possível (para manter qualidade e reduzir tempo)
+	•	pequenos cortes e ajustes para ritmo e estética da grade
+
+Se algo cai abaixo do padrão, o item é reprovado (e o sistema registra “por quê” para não insistir no erro).
+
+⸻
+
+9) fila de transmissão e diversidade
+
+A VVTV organiza a transmissão com uma fila inteligente:
+	•	política FIFO (ordem de chegada), com espaço para bônus de curadoria (itens excelentes sobem na fila);
+	•	quota de diversidade para evitar sequência de temas parecidos;
+	•	música aparece numa proporção mínima (ex.: 10%), para oxigenar o fluxo.
+
+Antes de publicar o lote, a curadoria vigilante (um conselheiro de IA) revisa os 10–12 itens finais:
+	•	detecta repetição de paleta (cores/estética), tags idênticas e streaks de duração;
+	•	sugere reorder ou eleva variedade;
+	•	aplica a mudança apenas quando a confiança da sugestão é alta — caso contrário, apenas aconselha (e tudo fica registrado).
+
+⸻
+
+10) transmissão
+
+Com os itens prontos:
+	•	a VVTV gera HLS/ABR (várias taxas compatíveis) e publica no storage;
+	•	o player entrega isso via CDN;
+	•	há um loop de emergência (curto e elegante) para cobrir qualquer queda de buffer.
+
+O espectador só percebe: funciona sempre e soa bem.
+
+⸻
+
+11) o que a IA faz (e o que não faz)
+
+A VVTV usa IA de forma responsável e limitada:
+	•	a IA não governa — ela observa, compara e sugere;
+	•	em casos críticos (erro grave, conteúdo proibido), a IA pode travar ou alertar;
+	•	no dia a dia, ela serve como “gosto editorial assistido”: ajuda a reranquear e a diversificar quando faz sentido.
+
+Pensa nela como um co-editor sensível, não como um tirano.
+
+⸻
+
+12) aprendizado diário (D+1) e a “peça-mãe” do dono
+
+Todo dia, a VVTV:
+	•	gera relatórios sobre o que foi ao ar, qualidade, repetição estética, retenção;
+	•	propõe micro-ajustes na lógica de negócio (uma espécie de “cartão perfurado” do dono), sempre pequenos, com teste canário (aplica primeiro só em parte da programação);
+	•	só consolida mudanças se os indicadores continuarem bons.
+
+A lógica de negócio é um arquivo claro (ex.: business_logic.yaml) — ele é a alma da VVTV: define o que perseguir, o que evitar e que limites são inegociáveis.
+Você pode trocar peças-chave (ex.: palavras-chave de busca, foco de buckets, temperatura da seleção) uma vez por mês — o resto é aperfeiçoamento contínuo automático.
+
+⸻
+
+13) governança e rastreabilidade (o “livro-razão”)
+
+Cada passo (descobrir, planejar, baixar, editar, aprovar, publicar) vira um fato assinado em um ledger simples: arquivos NDJSON com assinatura e histórico.
+Isso traz:
+	•	auditabilidade (“quem fez o quê, quando e por quê”);
+	•	reconstrução (se der ruim, dá pra refazer os índices e a visão do dia a partir do histórico);
+	•	clareza editorial (as decisões da IA ficam marcadas como tal, com confiança e razão).
+
+⸻
+
+14) onde roda (e por quê)
+	•	LAB (seus Macs) é onde rodam as partes pesadas:
+navegador real (para dar play e pegar HD), edição, encode, controle de qualidade e pool de IA.
+	•	Borda (Cloud/CDN) cuida do portal (link do canal), assinatura de URLs, entrega global, e armazena os arquivos de transmissão e o ledger.
+
+Isso dá custo baixo, controle e resiliência: se a internet oscilar, o LAB continua produzindo; quando o link volta, tudo sincroniza e a TV segue em frente.
+
+⸻
+
+15) segurança e conformidade
+	•	o sistema simula humanos no navegador para descobrir e confirmar HD, mas respeita políticas editoriais rígidas (o que pode ou não entrar);
+	•	itens sensíveis (ex.: suspeitas de conteúdo proibido) não passam — a camada de segurança é prioritária e registramos evidências;
+	•	cada decisão é assinada e verificável.
+
+⸻
+
+16) o que você, dono, precisa ajustar (e com que frequência)
+	•	Palavras-chave e buckets de busca (o “que” perseguir): revisão mensal.
+	•	Parâmetros de variedade e ritmo (quanto explorar vs manter o padrão): ajuste mensal.
+	•	Padrões de qualidade (VMAF/LUFS, etc.): são estáveis — só mexe se necessário.
+	•	Micro-ajustes diários: o sistema propõe e testa; você revisa quando quiser (ou deixa que siga se os KPIs estiverem bem).
+
+⸻
+
+17) por que isso funciona (mesmo sem você por perto)
+	•	a VVTV planeja constantemente, baixa só quando vai usar, edita com padrão técnico rigoroso e diversifica a grade com intencionalidade;
+	•	a IA não manda — sugere e explica — e só aplica automaticamente quando está muito segura;
+	•	o aprendizado diário é pequeno e controlado, então as melhorias acumulam sem quebrar a TV;
+	•	tudo fica documentado no ledger — dá pra voltar, revisar e entender.
+
+⸻
+
+18) em três linhas
+	•	Descobre conteúdo bom e planeja com antecedência.
+	•	Baixa depois do play (pega o HD real), edita bem e transmite bonito.
+	•	Aprende todo dia, com IA conselheira, sem perder o controle.
+
+⸻
+
+
+VVTV — Blueprint Final (2026)
+
+Stack 100% Rust nos LABs + Cloudflare só onde faz sentido.
+Crates reais (publicados): json_atomic, logline-core, tdln-*, lllv-*, ubl-* (ubl-ledger, ubl-runtime, ubl-sirp, ubl-office, ubl-mcp, ubl-crypto, ubl-codec, ubl-types).
+Mantras:
+	•	Uma verdade só → Ledger UBL (NDJSON canônico, BLAKE3, Ed25519/DV25 opcional).
+	•	Política determinística → TDLN Gate + “Cartão do Dono” (business_logic.yaml).
+	•	LLM como azeite → via MCP auditado (pool local, budgets, circuit breaker).
+	•	Cloudflare minimal → R2/Pages/Workers para servir e verificar; LAB faz o pesado.
+
+⸻
+
+1) Arquitetura (macro → micro)
+
+[Lado Público / Edge]
+Cloudflare Pages (vv-web) ──▶ Worker (vv-api) ──▶ R2 (artefatos públicos)
+                                     ▲
+                                     │ (read-only, verificação)
+                            Sirp-Edge HTTP (fallback p/ webhooks)
+
+[Lado LAB / Mac minis – “MAX”]
+Sirp-Node (libp2p/QUIC) ◀── Sirp-Edge (HTTP↔SIRP) ── Ingress
+       │
+       ├─► Office-AgentD (ubl-office + atomic-runtime)
+       │      ├─ TDLN Compiler/Gate (tdln-*)
+       │      ├─ Curator Vigilante (advice/apply; confidence ≥ 0.62)
+       │      ├─ LLM via MCP-Hub (ubl-mcp → LLM Pool)
+       │      └─ Spans → UBL-LedgerD (append-only)
+       │
+       ├─► Indexer-LLLV (lllv-index) → Packs + Merkle proofs
+       │
+       ├─► UBL-LedgerD (rotation+WAL+push R2)
+       │
+       └─► Autopilot D+1 (ajustes no business_logic.yaml; canary 20%/60min; rollback)
+
+Detalhes que puxamos do histórico:
+	•	Seleção softmax com seed por slot (determinístico, T≈0.6).
+	•	QC inegociáveis (PBD, moderação, VMAF≥90, LUFS -14 ±0.5).
+	•	Curator aplica só acima de 0.62 de confiança; senão Advice; TokenBucket (6 applies/h).
+	•	Autopilot: D+1, bounds anti-windup; PR automático no business_logic.yaml.
+	•	Emergência: buffer crítico <1h injeta loop de segurança.
+	•	SIRP: idempotência/HMAC/receipt e (no LAB) libp2p/QUIC + Kademlia; Worker usa HTTP fallback.
+
+⸻
+
+2) Serviços (bins) e crates (todos prontos)
+
+Bin (LAB/Edge)	Função	Crates
+sirp-edge (Edge/LAB)	Gateway HTTP SIRP (idempotência, receipts, webhooks) + ponte p/ libp2p	ubl-sirp, ubl-crypto, ubl-codec, json_atomic
+sirp-node (LAB)	Nó libp2p QUIC/Noise + Kademlia (intent routing)	ubl-sirp (driver libp2p), ubl-crypto
+ubl-ledgerd (LAB)	Append-only NDJSON canônico, WAL, rotação e push→R2	ubl-ledger, json_atomic, ubl-crypto
+office-agentd (LAB)	Execução de agentes (lifecycle, I/O, memória) + spans no UBL	ubl-office, ubl-runtime, logline-core, json_atomic
+indexer-lllv (LAB)	Gera Index Packs + Merkle proofs a partir do ledger	lllv-index, lllv-core, json_atomic
+mcp-hub (LAB)	MCP auditado (providers: pool://, ollama://, http://) + budgets	ubl-mcp, ubl-ledger
+vv-api (Worker)	API fininha: lista packs/proofs no R2 e entrega verificações	(runtime JS) + esquemas do ubl-codec
+vv-web (Pages)	UI (player, painéis, “verificar prova”)	Next.js/Pages; sem SSR caro
+
+Se quiser mais compacto: vv-worker (subcomandos para office/indexer/ledger).
+
+⸻
+
+3) Fluxos críticos (realistas)
+
+3.1 Ingestão & Planejamento
+	1.	sirp-edge recebe intenção (HTTP) → frame SIRP com HMAC+receipt.
+	2.	office-agentd chama tdln-compiler + tdln-gate com business_logic.yaml.
+	3.	Scoring (6 fatores) + diversidade + softmax(T=0.6) com seed do slot.
+	4.	Tudo span → ubl-ledgerd (linha canônica NDJSON com CID=BLAKE3).
+
+3.2 Busca de vídeo na internet (estava no histórico)
+	•	Agente Fetcher roda no LAB (respeita o Gate):
+	•	fontes: RSS/Atom, YouTube API / yt-dlp, Vimeo, sites whitelisted;
+	•	PBD obrigatório; moderation antes de elegível;
+	•	extrai metadados → span (ledger) → entra no pool de candidatos.
+	•	Curadoria/LLM (via MCP-Hub) só para enriquecer tags/títulos, nunca para burlar guardrails.
+	•	QC (VMAF, LUFS) e ComplianceAuditor (hashes/overlays) — tudo logado.
+
+3.3 Curadoria Vigilante
+	•	Sinais: palette_similarity, tag_duplication, duration_streak, bucket_imbalance, novelty temporal (KLD).
+	•	≥0.62 → Apply (reorder/replace limitado por max_reorder_distance e TokenBucket); senão Advice.
+	•	Cada decisão: llm_action {source, model, reason, confidence} + JSONL em logs/curator_vigilante/.
+
+3.4 Autopilot D+1 (03:00 UTC)
+	•	Lê KPIs de D-1 (e.g., retention_5min≥0.38, vmaf_avg≥90).
+	•	Calcula micro-ajustes seguros (bounds + anti-windup), canary 20% / 60 min, valida → commit no business_logic.yaml; se regredir, rollback.
+
+⸻
+
+4) Dados: layout, retenção e “bagunça controlada”
+
+R2 (público, imutável):
+
+r2://vvtv/
+  tenants/{tenant}/
+    ledger/YYYY/MM/DD/ledger.ndjson.lz4
+    ledger/YYYY/MM/DD/ledger.sig       (opcional)
+    packs/{date}/index_{shard}.lllv
+    packs/{date}/proofs_{shard}.json
+    assets/...   (thumbs, manifests)
+
+LAB (quente e mutável):
+
+/var/lib/vvtv/
+  ledger/   (current + WAL)
+  packs/    (antes de subir p/ R2)
+  work/     (transcodes temporários)
+  cache/    (LLM/cache HTTP)
+
+Projeção SQL (D1/SQLite opcional) — “tiozão e descartável”:
+	•	Tabelas normalizadas do JSON✯Atomic (colunas-espelho).
+	•	Mensal: exporta CSV/Parquet, comprime e joga no R2 (/projections/).
+	•	Se sumir, reconstrói pelo ledger. Valor da padronização: a mesma forma atômica alimenta R2, SQL e indexação → zero desvio de esquema.
+
+⸻
+
+5) Segurança & multi-tenant
+	•	Partition key = {tenant}/{YYYY/MM/DD} o tempo todo (R2, ledger, packs).
+	•	Assinatura: Ed25519 (DV25 opcional) com domínio UBL:LEDGER:v1 (replay-safe).
+	•	SIRP receipts + idempotência/HMAC (HTTP) + QUIC/Noise (libp2p) no LAB.
+	•	Keys per tenant (KID), budgets por provider MCP; DID nativo (did:key) quando fizer sentido.
+	•	Backups: rota R2→R2 entre contas (barato) + snapshot do ledger local.
+
+⸻
+
+6) Observabilidade & SLOs
+	•	Métricas (todos os bins):
+ledger_lines_appended_total, softmax_selection_time_ms{p95<10},
+mcp_calls_total{provider}, llm_hook_timeout_rate<10%,
+curator_apply_rate 5–15%, autopilot_rollbacks_total<5%/sem,
+kpi_retention_5min, kpi_vmaf_avg, kpi_lufs_avg.
+	•	Dashboards: “Business Logic Overview” + “Autopilot Health”.
+	•	Alertas: BusinessLogicLoadFailed, LLMTimeoutRateHigh, AutopilotRollbacksHigh, KPIRetentionCritical.
+
+⸻
+
+7) Deploy (curto e honesto)
+
+LAB (systemd)
+
+cp target/release/{sirp-edge,sirp-node,ubl-ledgerd,office-agentd,indexer-lllv,mcp-hub} /usr/local/bin/
+mkdir -p /var/lib/vvtv/{ledger,packs,work,cache} /etc/vvtv
+cp configs/{business_logic.yaml,agent.toml,mcp.toml,sirp.toml,r2.toml} /etc/vvtv/
+
+systemctl enable --now {sirp-node,sirp-edge,ubl-ledgerd,office-agentd,mcp-hub,indexer-lllv}
+curl -fsS localhost:8080/healthz
+tail -f /var/lib/vvtv/ledger/*.ndjson
+
+Cloudflare
+	•	R2: criar bucket vvtv.
+	•	Pages: vv-web/ (UI).
+	•	Worker vv-api: rotas GET /packs/:date, GET /proofs/:id, só read do R2.
+	•	(Opcional) Tunnel p/ acessar painéis internos do LAB sem expor portas.
+
+⸻
+
+8) “Cartão do Dono” (business_logic.yaml) — pontos que ficam valendo
+	•	selection: method=softmax, temperature=0.6, seed_strategy=slot_hash.
+	•	knobs: plan_selection_bias ∈ [-0.20, 0.20].
+	•	exploration: epsilon com SlidingBounds (anti-windup).
+	•	curator: min_confidence_apply=0.62, max_reorder_distance, diversity_target=0.05.
+	•	rollout: observer → apply_limited (prime time) → pleno.
+	•	monthly_review: Gera relatório + suggested_policy_patch.yaml (PR requer 1 aprovação).
+
+⸻
+
+9) LLM Pool (desacoplado, reusável)
+	•	Fica fora do VVTV; mcp-hub fala com ele (provider pool://).
+	•	Modelos “LAB-friendly”: Phi-3 Mini, Llama-3.1 8B, Gemma-2 9B (via Ollama).
+	•	Estratégias: FASTEST, VOTE, MAP_REDUCE; cache; budgets por task; circuit-breakers.
+	•	Autenticação por chave; rate-limit e auditoria no MCP.
+
+⸻
+
+10) Custos e onde Cloudflare é melhor (mesmo com LAB)
+	•	R2 barato pra artefatos públicos grandes; CDN na veia (Pages/Workers).
+	•	Workers só pra leitura/verificação (centavos).
+	•	Tudo que é pesado (transcode, fetch massivo, LLM, index) fica no LAB.
+	•	Se for 100% LAB, ainda vale R2/Pages pra distribuição e para ter edge global.
+
+⸻
+
+11) Estrutura de repositório (operacional)
+
+vvtv-stack/
+├─ Cargo.toml (workspace dos bins)
+├─ services/
+│  ├─ sirp-edge/        (usa ubl-sirp)
+│  ├─ sirp-node/        (libp2p binding)
+│  ├─ ubl-ledgerd/      (usa ubl-ledger)
+│  ├─ office-agentd/    (ubl-office + ubl-runtime + tdln-*)
+│  ├─ mcp-hub/          (ubl-mcp)
+│  └─ indexer-lllv/     (lllv-index)
+├─ configs/
+│  ├─ business_logic.yaml
+│  ├─ sirp.toml, agent.toml, mcp.toml, r2.toml
+├─ infra/
+│  ├─ systemd/*.service
+│  ├─ cloudflare/worker/ (vv-api)
+│  └─ pages/ (vv-web)
+└─ scripts/
+   ├─ dev_up.sh
+   ├─ rotate_and_push.sh
+   └─ rebuild_index.sh
+
+
+⸻
+
+12) Riscos & Mitigações (bem práticos)
+	•	Drift de política → Autopilot com bounds + PR humano mensal.
+	•	LLM instável → MCP com timeout, fallback, circuit-breaker e cache.
+	•	Explosão de dados (800 projetos / 1M apps) → particionamento {tenant}/{date} + rotação + projeção mensal; packs shardizados.
+	•	Integridade do ledger → NDJSON canônico, CID = BLAKE3, assinatura por domínio, receipt SIRP, backups R2→R2.
+
+⸻
+
+13) Prova de Done (um dia de trabalho focado)
+	1.	Subir sirp-edge, ubl-ledgerd, office-agentd no LAB.
+	2.	Postar 1 intenção → ver 1 linha no ledger.ndjson.
+	3.	Rodar indexer-lllv → publicar 1 pack no R2.
+	4.	vv-api listar o pack; vv-web mostrar e verificar a prova. ✅
+
+⸻
+
+Se quiser, eu já te entrego o skeleton pronto do vvtv-stack/ (bins, configs padrão, systemd, worker e pages básicos) referenciando exatamente os crates publicados — nada de reimplantar o que já existe. Diz a palavra que eu mando. 💥
+VVTV — Arquitetura Prevista (com mapeamento de crates)
+
+1) Visão em árvore (monorepo)
+
+vvtv/
+├── apps/
+│   ├── office-agentd/           # orquestra spans/rotinas (cron + DAG)
+│   ├── vv-fetcherd/             # discovery (vídeo/música) + TDLN Gate
+│   ├── vv-prefetchd/            # PBD + pré-download com evidência
+│   ├── vv-qcd/                  # QC (VMAF/SSIM/LUFS) + compliance
+│   ├── vv-plannerd/             # score + diversidade + softmax(seed)
+│   ├── vv-queue/                # fila (music_ratio, curation_bump, jitter)
+│   ├── vv-broadcastd/           # HLS/RTMP + emergency loop
+│   ├── indexer-lllv/            # empacota LLLV + Merkle, envia a R2
+│   ├── ubl-ledgerd/             # writer/rotator do ledger NDJSON
+│   ├── mcp-hub/                 # LLM Pool (judge/rerank/report) via MCP
+│   ├── vv-api-worker/           # Cloudflare Worker (lista packs/proofs)
+│   └── vv-web/                  # UI (Pages) + “verificar prova”
+│
+├── configs/
+│   ├── business_logic.yaml      # “Cartão do Dono”
+│   ├── sources.yaml             # domínios/feeds/termos/buckets
+│   ├── llm.toml                 # endpoints, budgets, deadlines
+│   ├── autopilot.toml           # limites/bounds + canary
+│   └── runtime.toml             # roteamento/quotas/limites gerais
+│
+└── crates/                      # (puxadas do logline-workspace)
+    ├── json_atomic/             # canonização + BLAKE3
+    ├── logline-core/            # átomo conceitual (9 campos)
+    ├── lllv-core/               # cápsulas criptográficas
+    ├── lllv-index/              # Index Pack + Merkle
+    ├── tdln-ast/                # AST canônico
+    ├── tdln-compiler/           # NL/DSL → AST + Canon
+    ├── tdln-gate/               # Gate de políticas (preflight/decision)
+    ├── tdln-proof/              # prova determinística (DV25/Ed25519)
+    ├── tdln-brain/ (opcional)   # camada cognitiva determinística
+    ├── ubl-types/               # IDs + DIM + helpers
+    ├── ubl-codec/               # JSON✯Atomic + TLV (no_std friendly)
+    ├── ubl-crypto/              # Ed25519/HMAC/did:key/batch verify
+    ├── ubl-ledger/              # NDJSON append-only (+ WAL / rotate)
+    ├── ubl-runtime/             # roteador + middlewares + budgets
+    ├── ubl-sirp/                # cápsula+recibo HTTP (SIRP binding)
+    ├── ubl-office/              # ambiente de execução p/ agentes
+    └── ubl-mcp/                 # MCP auditado (client/server)
+
+
+⸻
+
+2) Fluxo (macro → micro) e quem chama quem
+	1.	Discovery → vv-fetcherd
+Lê sources.yaml, busca em APIs/RSS/yt-dlp/domínios whitelisted.
+Emite spans DiscoveryFound → ubl-ledgerd.
+	2.	Eligibilidade & Gate → vv-fetcherd + tdln-gate
+Aplica políticas editoriais (TDLN).
+Emite DiscoveryEligible/Rejected.
+	3.	Pré-planejamento → vv-plannerd
+Score (6 fatores), diversidade, rascunho por janela.
+Emite PlanDraft{slot_hint}.
+	4.	PBD & Pré-download → vv-prefetchd
+Play-before-download + envelope de evidência.
+Emite PrefetchOk/Failed.
+	5.	QC & Compliance → vv-qcd
+VMAF/SSIM/LUFS, overlay/hash/DRM heurístico.
+Emite QcApproved/Rejected.
+	6.	Planejamento final + Curador → vv-plannerd + mcp-hub
+Softmax(T=0.6) com seed por slot; Curador (LLM/MCP) pode reordenar com confiança≥0.62.
+Emite PlanFinal + Curator{Advice|Apply}.
+	7.	Fila → vv-queue
+music_ratio, curation_bump, FIFO+jitter.
+Emite SlotScheduled{playlist}.
+	8.	Streaming → vv-broadcastd
+HLS/RTMP do LAB; emergency loop sob buffer<1h.
+Emite StreamEvent{started/rotated/ended}.
+	9.	Indexação & Provas → indexer-lllv
+Gera LLLV pack + Merkle proofs e publica na R2.
+	10.	Entrega & UI → vv-api-worker + vv-web
+Worker lista packs/provas (R2); Web exibe playlist e “verificar prova”.
+
+Tudo append-only no ubl-ledger (NDJSON canônico); SQL “tiozão” é projeção, não fonte de verdade.
+
+⸻
+
+3) Mapeamento de dependências (serviço → crates do logline)
+
+Serviço	Crates principais	Por quê
+office-agentd	ubl-runtime, ubl-office, ubl-ledger, json_atomic, ubl-types	Orquestra jobs, emite spans, middlewares de orçamento/quotas, logging no ledger.
+vv-fetcherd	tdln-gate, tdln-compiler, tdln-ast, tdln-proof, json_atomic, ubl-ledger, ubl-types, (opcional ubl-sirp)	Gate editorial determinístico; canonização e registro dos achados.
+vv-prefetchd	ubl-ledger, ubl-types, json_atomic	Registra PBD/pre-download e evidências como fatos atômicos.
+vv-qcd	ubl-ledger, json_atomic, ubl-types	Registra métricas QC/Compliance com prova reprodutível.
+vv-plannerd	tdln-gate, tdln-compiler, tdln-ast, json_atomic, ubl-ledger, ubl-runtime	Aplica business logic (Cartão do Dono), scoring/diversidade/softmax; registra decisões.
+mcp-hub	ubl-mcp, ubl-runtime, ubl-ledger, json_atomic	Integra LLM Pool sob MCP com budgets/timeouts/circuit-breaker, sempre auditado.
+vv-queue	ubl-ledger, json_atomic, ubl-types	Consolida playlist por slot; marca jitter e bumps.
+vv-broadcastd	ubl-ledger, json_atomic	Marca eventos de reprodução (início/rotação/fim) e incidentes.
+indexer-lllv	lllv-core, lllv-index, json_atomic, ubl-crypto, ubl-codec, ubl-ledger	Empacota cápsulas + árvore Merkle, exporta/verifica provas.
+ubl-ledgerd	ubl-ledger, ubl-crypto, json_atomic	Escrita/rotação/WAL do NDJSON canônico + verificação.
+vv-api-worker (CF)	ubl-codec (no_std), ubl-types, json_atomic (no_std build), sem std/crypto pesada	Expor lista de packs/provas a partir da R2 com binário leve (Workers/WASM).
+vv-web (Pages)	(sem crates Rust; front)	UI consome Worker e exibe verificação (client-side).
+
+Observação: quando precisar recibos/cápsulas em bordas HTTP, plugar ubl-sirp nos bins que falam com o mundo (gateway, ingest, ou futuras APIs).
+
+⸻
+
+4) Regras de uso das crates por camada
+	•	Canon & IDs (sempre): json_atomic, ubl-types
+	•	Ledger (fatos): ubl-ledger (NDJSON canônico + assinatura opcional)
+	•	Políticas determinísticas: tdln-* (gate, compiler, proof)
+	•	Provas de distribuição: lllv-core/lllv-index
+	•	Conectivo de execução: ubl-runtime + ubl-office (router, budgets, handlers)
+	•	Cripto & Identidade: ubl-crypto (Ed25519, did:key), apenas onde necessário
+	•	Wire/Receipts (HTTP/SIRP): ubl-sirp (quando expor cápsulas/recibos)
+
+⸻
+
+5) Features & targets (LAB vs Cloudflare)
+	•	LAB (Mac mini): --features std,crypto em todos os bins; LLM Pool/MCP habilitados.
+	•	Worker (Cloudflare): compilar somente ubl-codec, ubl-types, json_atomic com no_std/wasm32; evitar reqwest/native-tls; preferir fetch do runtime do Worker.
+
+⸻
+
+6) Configuração mínima pra subir
+	•	configs/business_logic.yaml (seleção/softmax/seed/diversidade/curador)
+	•	configs/sources.yaml (feeds, domínios, termos)
+	•	configs/llm.toml (endpoint local + budgets)
+	•	configs/runtime.toml (quotas, circuit-breakers, filas)
+	•	R2 bucket “public/packs/” (para indexer-lllv)
+	•	vv-api-worker apontando para R2 (read-only)
+
+⸻
+
+7) Ordem de bring-up (prova de vida)
+	1.	ubl-ledgerd → 2) office-agentd → 3) vv-fetcherd → 4) vv-prefetchd → 5) vv-qcd →
+	2.	vv-plannerd (+ mcp-hub em observer) → 7) vv-queue → 8) vv-broadcastd →
+	3.	indexer-lllv → 10) vv-api-worker + vv-web.
+
+⸻
+
+se quiser, eu já te escrevo os Cargo.toml de cada app com as deps exatas (versões do workspace) + features certas (LAB/Worker) e deixo um Makefile.toml (cargo-make) com make up_lab / make cf_deploy. Quer que eu já gere esses arquivos base?

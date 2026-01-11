@@ -1,0 +1,29 @@
+name: Add to Mission Control
+
+on:
+  issues:
+    types: [opened, labeled]
+  pull_request:
+    types: [opened, labeled]
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'mission-control') ||
+      github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'mission-control')
+    
+    steps:
+      - name: Generate GitHub App token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_GITHUB_ID }}
+          private-key: ${{ secrets.APP_GITHUB_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      
+      - name: Add to Mission Control Project
+        uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/users/danvoulez/projects/1
+          github-token: ${{ steps.generate-token.outputs.token }}

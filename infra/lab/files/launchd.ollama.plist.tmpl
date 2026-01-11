@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>tv.voulezvous.ollama</string>
+    
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/ollama</string>
+        <string>serve</string>
+    </array>
+    
+    <key>UserName</key>
+    <string>${USER}</string>
+    
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>OLLAMA_HOST</key>
+        <string>0.0.0.0:11434</string>
+        <key>OLLAMA_MODELS</key>
+        <string>/var/lib/vvtv/ollama/models</string>
+    </dict>
+    
+    <key>StandardOutPath</key>
+    <string>/opt/vvtv/logs/ollama.stdout.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>/opt/vvtv/logs/ollama.stderr.log</string>
+    
+    <key>RunAtLoad</key>
+    <true/>
+    
+    <key>KeepAlive</key>
+    <true/>
+    
+    <key>ProcessType</key>
+    <string>Background</string>
+</dict>
+</plist>

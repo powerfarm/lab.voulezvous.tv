@@ -1,0 +1,70 @@
+name: Mission Control Task
+description: Task para o Mission Control Project (coordena Registry, TV, Rust)
+title: "[WORKSTREAM] "
+labels: ["mission-control"]
+
+body:
+  - type: dropdown
+    id: workstream
+    attributes:
+      label: Workstream
+      description: Qual projeto?
+      options:
+        - Registry
+        - TV
+        - Rust
+    validations:
+      required: true
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome (1 frase)
+      description: O que sai no mundo quando isso termina?
+      placeholder: "Ex: vvtv-ledger-svc rodando com 3 fatos gravados e verificados"
+    validations:
+      required: true
+
+  - type: textarea
+    id: pod
+    attributes:
+      label: Proof of Done
+      description: Como você sabe que terminou? (comandos, outputs esperados)
+      placeholder: |
+        Ex:
+        ```bash
+        cargo build --release
+        ./tests/pod.sh http://localhost:8080
+        # Output: ✅ All tests passed
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context Pack / Links
+      description: Links para CONTEXT_*.md, ADRs, ou docs relevantes
+      placeholder: |
+        - CONTEXT_VOULEZVOUS_TV.md#next-3-tasks
+        - ADR-001.md
+        - https://docs.rs/json_atomic
+
+  - type: input
+    id: next_action
+    attributes:
+      label: Next Action (1 linha)
+      description: Primeira coisa a fazer
+      placeholder: "Ex: cd apps/vvtv-ledger-svc && cargo build --release"
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      description: Active = fazendo hoje, Capture = fazer depois
+      options:
+        - Capture
+        - Active
+      default: 0
+    validations:
+      required: true
