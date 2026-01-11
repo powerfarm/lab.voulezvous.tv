@@ -16,7 +16,6 @@ mod ledger;
 mod types;
 
 use ledger::LedgerManager;
-use types::*;
 
 #[derive(Clone)]
 struct AppState {
@@ -115,7 +114,7 @@ async fn create_fact(
     let start = std::time::Instant::now();
 
     // Canonicalize using json_atomic
-    let canonical_bytes = json_atomic::canonicalize(&payload.value)
+    let canonical_bytes = json_atomic::canonize(&payload.value)
         .map_err(|e| AppError::Canonicalization(e.to_string()))?;
     
     let canonical_str = String::from_utf8(canonical_bytes.clone())
@@ -133,7 +132,7 @@ async fn create_fact(
 
     // Record metrics
     let duration = start.elapsed();
-    metrics::histogram!("ledger_append_duration_seconds", duration.as_secs_f64());
+    metrics::histogram!("ledger_append_duration_seconds").record(duration.as_secs_f64());
     metrics::counter!("facts_written_total", "stream" => stream.clone()).increment(1);
 
     info!(

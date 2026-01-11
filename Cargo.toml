@@ -1,16 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-    "apps/office-agentd",
-    "apps/vv-fetcherd",
-    "apps/vv-prefetchd",
-    "apps/vv-qcd",
-    "apps/vv-plannerd",
-    "apps/vv-queue",
-    "apps/vv-broadcastd",
-    "apps/ubl-ledgerd",
-    "apps/indexer-lllv",
-    "apps/mcp-hub",
+    "apps/vvtv-ledger-svc",
 ]
 
 [workspace.package]
@@ -71,7 +62,7 @@ serde_yaml = "0.9"
 ffmpeg-next = "7.1"
 
 # Headless browser (for PBD)
-headless_chrome = { version = "1.0", optional = true }
+headless_chrome = "1.0"
 
 [profile.release]
 opt-level = 3

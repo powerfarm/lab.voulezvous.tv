@@ -7,9 +7,6 @@ license = "MIT"
 [dependencies]
 # LogLine ecosystem
 json_atomic = "0.1.1"
-ubl-ledger = { version = "0.3", features = ["async"] }
-ubl-types = "0.3"
-ubl-crypto = "0.3"
 
 # Web framework
 axum = { version = "0.7", features = ["macros"] }
